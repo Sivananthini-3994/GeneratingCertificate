@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Your Certificate</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Main content wrapper */
+        .main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Form Container Styles */
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Form Field Styles */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            outline: none;
+            transition: border 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #007bff;
+        }
+
+        /* Submit Button Styles */
+        button {
+            padding: 12px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .form-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="form-container">
+            <h1>Get Your Certificate</h1>
+            <form id="certificate-form">
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required>
+                
+                <label for="email">Email ID:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required>
+
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required>
+                
+                <button type="submit" onclick="generateCertificate(event)">Get Certificate</button>
+            </form>
+        </div>
+    </main>
+
+    <!-- jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+    // Function to generate and download the certificate as a PDF
+    async function generateCertificate(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Get form values
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Import jsPDF
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            orientation: 'landscape',
+            unit: 'px',
+            format: [1600, 900], // Set PDF size to 1600x900
+            putOnlyUsedFonts: true,
+            floatPrecision: 16 // Avoid rounding errors
+        });
+
+        // Load the background image
+        const backgroundUrl = 'https://i.imgur.com/Wz0qLs6.jpeg'; // Replace with your background image URL
+        const backgroundImg = await loadImage(backgroundUrl);
+
+        // Add background image (cover entire page)
+        doc.addImage(backgroundImg, 'JPEG', 0, 0, 1600, 900);
+
+        // Add certificate title
+        doc.setFontSize(150);
+        doc.setTextColor(0, 0, 0); // Black text
+        doc.setFont('Times New Roman', 'bold');
+        doc.text("CERTIFICATE", 800, 300, { align: "center" });
+
+        // Add subtitle
+        doc.setFontSize(76);
+        doc.setFont('Times New Roman', 'italic');
+        doc.text("OF COMPLETION", 800, 400, { align: "center" });
+
+        // Add presentation subtitle
+        doc.setFontSize(50);
+        doc.setFont('Cursive');
+        doc.text("This certificate is presented to", 800, 450, { align: "center" });
+
+        // Add recipient name
+        doc.setFontSize(100);  // Adjusted font size for the name
+        doc.setFont('Courier', 'bold');
+        doc.text(`${name}`, 800, 540, { align: "center" });
+
+        // Add course completion details
+        doc.setFontSize(35);
+        doc.text("has successfully completed the course 'PLACEMENT TRAINING' with ", 800, 580, { align: "center" });
+        doc.text(`85% held by SharpenedMind from ${startDate} to ${endDate}.`, 800, 620, { align: "center" });
+
+        // Add signature
+        doc.setFontSize(30);
+        doc.text("DURGA DEVI", 800, 750, { align: "center" });
+        doc.line(680, 755, 920, 755); // Signature line
+
+        // Add president title below signature
+        doc.setFontSize(25);
+        doc.text("PRESIDENT-SHARPENEDMIND", 800, 790, { align: "center" });
+
+        // Save the PDF
+        doc.save(`${name}_Certificate.pdf`);
+    }
+
+    // Function to load an image
+    function loadImage(url) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.src = url;
+        });
+    }
+    </script>
+</body>
+</html>
